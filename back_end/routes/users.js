@@ -1,9 +1,17 @@
 var express = require('express');
 var router = express.Router();
+const query = require('../lib/datasource/mysql_connection_promise');  // Database connection
 
-/* GET users listing. */
-router.get('/', function(req, res, next) {
-  res.send('respond with a resource');
+
+router.get('/', async function(req, res, next) {
+  const result = await query({
+    sql: `select * from Users;`,
+  });
+  let results = JSON.parse(JSON.stringify(result));
+  
+  res.send(results);
+  console.log(results);
+  
 });
 
 module.exports = router;
