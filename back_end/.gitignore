@@ -29,3 +29,5 @@ coverage
 *.sw?
 
 *.tsbuildinfo
+log.txt
+.node_repl_history
