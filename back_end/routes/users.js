@@ -1,8 +1,9 @@
 var express = require('express');
 var router = express.Router();
 const query = require('../lib/datasource/mysql_connection_promise');  // Database connection
-const { verifyToken,authMiddleware, generateToken } = require('../lib/encrypt/token');
+const { verifyToken, generateToken } = require('../lib/encrypt/token');
 const {error_control}=require('../lib/life_cycle/error_control');
+
 router.get('/', async function (req, res, next) {
   const result = await query({
     sql: `select * from Users;`,
@@ -118,7 +119,6 @@ router.patch('/updateUser', async (req, res, next) => {
     error_control(error);
   }
 });
-
 
 router.post('/updateUser', async (req, res, next) => {
   try {
