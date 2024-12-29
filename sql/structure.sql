@@ -60,5 +60,6 @@ CREATE TABLE IF NOT EXISTS CounselorLogins (
     Username VARCHAR(50),
     Password VARCHAR(32), -- 使用MD5加密后的密码
     LastLoginDateTime DATETIME,
+    IsAdmin BOOLEAN DEFAULT FALSE;
     FOREIGN KEY (CounselorID) REFERENCES Counselors(CounselorID)
 );

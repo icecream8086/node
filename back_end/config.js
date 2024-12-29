@@ -5,5 +5,8 @@ module.exports = {
         password: 'MYSQL_ROOT_PASSWORD',   // 数据库密码
         database: 'jinitaimei'    // 数据库名称
     },
+    secret_key:{
+        uuid:'ecbeecd6-bab5-44af-8b42-8dcb7e2f28ed'
+    }
 };
 //config.js
