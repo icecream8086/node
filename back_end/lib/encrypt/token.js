@@ -46,4 +46,14 @@ function get_uid(token){
     return decoded.UserID;
 }
 
-module.exports = { generateToken, verifyToken, authMiddleware,get_uid};
+function get_counselorID(token){
+    const decoded = verifyToken(token);
+    if (!decoded) {
+        return null;
+    }
+    // @ts-ignore
+    return decoded.CounselorID;
+}
+
+
+module.exports = { generateToken, verifyToken, authMiddleware,get_uid,get_counselorID};
