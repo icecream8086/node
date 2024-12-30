@@ -43,7 +43,7 @@ function get_uid(token){
         return null;
     }
     // @ts-ignore
-    return decoded.UID;
+    return decoded.UserID;
 }
 
 module.exports = { generateToken, verifyToken, authMiddleware,get_uid};

@@ -78,9 +78,7 @@ router.post('/register', async (req, res, next) => {
 
 router.post('/updateUser', async (req, res, next) => {
   try {
-    let token = req.headers.token;
-    console.log(req.headers);
-    
+    let token = req.headers.token;    
     if (!token) {
       return res.status(401).json({ message: 'Token is required.' });
     }
