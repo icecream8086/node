@@ -1,6 +1,6 @@
 # 主要接口实现
 
-## 用户注册和登录
+## 用户注册和登录 [done]
 
 ```bash
 # 用户注册: 在 Users 表插入新记录。
@@ -10,7 +10,7 @@
 # 修改密码: 验证 密码后 更新值。
 ```
 
-## 心理健康档案管理
+## 心理健康档案管理 [done]
 
 ```bash
 # 建立档案: 在 PsychologicalRecords 表插入新记录。
@@ -20,7 +20,7 @@
 # 查看档案: 查询 PsychologicalRecords 表。
 ```
 
-## 预约管理
+## 预约管理 [done]
 
 ```bash
 # 创建预约: 在 Appointments 表插入新记录。
@@ -32,7 +32,7 @@
 # 查看预约: 查询 Appointments 表。
 ```
 
-## 咨询管理
+## 咨询管理 [todo]
 
 ```bash
 # 开始咨询: 创建新的 CounselingRecords 记录。
@@ -58,3 +58,5 @@
 # 登录和验证: 验证 CounselorLogins 表中的用户名和密码。
 
 ```
+
+根据sql改写这段路由，不要额外附加api

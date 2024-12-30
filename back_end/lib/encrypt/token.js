@@ -3,7 +3,7 @@ var se=require('../../config');
 const secretKey =se.secret_key.uuid;
 
 function generateToken(payload) {
-    return jwt.sign(payload, secretKey, { expiresIn: '2h' });
+    return jwt.sign(payload, secretKey, { expiresIn: '24h' });
 }
 
 function verifyToken(token,debug=false) {
