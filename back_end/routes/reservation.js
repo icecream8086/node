@@ -133,5 +133,34 @@ router.get('/get_PsychologicalRecords', async (req, res, next) => {
     }
 });
 
+// router.get('/get_all_PsychologicalRecords', async (req, res, next) => {
+//     try {
+//         let token = req.headers.token;
+
+//         if (!token) {
+//             return res.status(401).json({ message: 'Token is required.' });
+//         }
+
+//         const decoded = verifyToken(token);
+//         if (!decoded) {
+//             return res.status(401).json({ message: 'Invalid or expired token.' });
+//         }
+        
+//         var UserID = get_uid(token);  
+//         const result = await query({
+//             sql: `SELECT * FROM Appointments ;`,
+//             values: [UserID],
+//         });
+
+//         if (result.length === 0) {
+//             return res.status(404).json({ message: 'Appointment not found.' });
+//         }
+
+//         return res.status(200).json({ record: result});
+//     } catch (error) {
+//         console.error(error);
+//         error_control(error, res, req, true);
+//     }
+// });
 
 module.exports = router;

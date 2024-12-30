@@ -8,6 +8,7 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var PsychologicalRecords = require('./routes/PsychologicalRecords');
 var reservation = require('./routes/reservation');
+var CounselingRecords = require('./routes/archive');
 var app = express();
 
 // view engine setup
@@ -24,6 +25,7 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/PsychologicalRecords', PsychologicalRecords);
 app.use('/reservation', reservation);
+app.use('/CounselingRecords', CounselingRecords);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

@@ -21,7 +21,7 @@ router.post('/add_PsychologicalRecords', async (req, res, next) => {
 
         // 当前时间作为 CreateDate
         const CreateDate = new Date();
-        UpdateDate = UpdateDate ? new Date(UpdateDate) : null;
+        UpdateDate = UpdateDate ? new Date(UpdateDate).toISOString().slice(0, 19).replace('T', ' ') : null;
         
         const result = await query({
             sql: `INSERT INTO PsychologicalRecords (UserID, CreateDate, UpdateDate, PsychologicalStatus)
@@ -56,8 +56,7 @@ router.post('/update_PsychologicalRecords', async (req, res, next) => {
         }
 
         // 当前时间作为 UpdateDate
-        const UpdateDate = new Date();
-
+        const UpdateDate = new Date().toISOString().slice(0, 19).replace('T', ' ');
         const result = await query({
             sql: `UPDATE PsychologicalRecords
                   SET UserID = ?, UpdateDate = ?, PsychologicalStatus = ?
@@ -129,11 +128,12 @@ router.get('/get_all_PsychologicalRecords', async (req, res, next) => {
             sql: `SELECT * FROM PsychologicalRecords WHERE UserID = ?`,
             values: [_get_uid],
         });
+        console.log(result);
 
         if (result.length === 0) {
             return res.status(404).json({ message: 'No records found for the user.' });
         }
-
+        
         return res.status(200).json({ records: result });
     } catch (error) {
         console.error(error);
