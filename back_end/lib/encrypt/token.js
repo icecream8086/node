@@ -6,13 +6,17 @@ function generateToken(payload) {
     return jwt.sign(payload, secretKey, { expiresIn: '2h' });
 }
 
-function verifyToken(token) {
+function verifyToken(token,debug=false) {
     try {
         const decoded = jwt.verify(token, secretKey);
-        console.log('Decoded:', decoded);
+        if(debug){
+            console.log('Decoded:', decoded);
+        }
         return decoded;
     } catch (err) {
-        console.error('Invalid token:', err.message);
+        if(debug){
+            console.log('Error:', err);
+        }
         return null;
     }
 }
@@ -33,4 +37,13 @@ function authMiddleware(req, res, next) {
     next(); // Token校验通过，继续执行后续处理逻辑
 }
 
-module.exports = { generateToken, verifyToken, authMiddleware };
+function get_uid(token){
+    const decoded = verifyToken(token);
+    if (!decoded) {
+        return null;
+    }
+    // @ts-ignore
+    return decoded.UserID;
+}
+
+module.exports = { generateToken, verifyToken, authMiddleware,get_uid};
