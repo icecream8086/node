@@ -20,6 +20,9 @@ async function error_control(err, res, req,console_log=false,log=false,log_path=
     if (err.message === "Folder does not exist") {
         return res.status(404).send(JSON.stringify({ message: err.message}));
     }
+    if (/^Duplicate entry .* for key 'Users.Users_UNIQUE'$/.test(err.message)) {
+        return res.status(409).send(JSON.stringify({ message: "Duplicate entry detected" }));
+    }    
     return res.status(500).send(JSON.stringify({ message: err.message}));
 }
 module.exports = {error_control};

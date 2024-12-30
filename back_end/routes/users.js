@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 const query = require('../lib/datasource/mysql_connection_promise');  // Database connection
-const { verifyToken, generateToken } = require('../lib/encrypt/token');
+const { verifyToken, generateToken,get_uid } = require('../lib/encrypt/token');
 const {error_control}=require('../lib/life_cycle/error_control');
 
 router.get('/', async function (req, res, next) {
@@ -41,88 +41,46 @@ router.post('/auth', async (req, res, next) => {
     } else {
       return res.status(401).json({ message: 'Username or password error.' });
     }
-    console.log(results_cheuqe);
 
   } catch (error) {
-    error_control(error);
+    error_control(error,res,req);
   }
 
 });
 
 router.post('/register', async (req, res, next) => {
   try {
-    let { name, gender, birthdate, contactInfo, password } = req.body;
+    let { name, gender, birthdate, Phone, password,Email } = req.body;
     if (!name || !password) {
       return res.status(400).json({ message: 'Name and password are required.' });
     }
 
     // 插入新用户到 Users 表中
+    birthdate= new Date(birthdate);
+    birthdate=null;
     const result = await query({
-      sql: `INSERT INTO Users (Name, Gender, Birthdate, ContactInfo, Password)
-            VALUES (?, ?, ?, ?, ?)`,
-      values: [name, gender, birthdate, contactInfo, password],
+      sql: `INSERT INTO Users (Name, Gender, Birthdate, Phone, Password, Email)
+            VALUES (?, ?, ?, ?, ?, ?);`,
+      values: [name, gender, birthdate, Phone, password,Email],
     });
 
-    return res.status(201).json({ message: 'User registered successfully.' });
+    console.log(result);
+    
+    return res.status(200).json({ message: 'User registered successfully.' });
 
-  } catch (error) {
-    error_control(error);
+  } catch (error) {    
+    console.log(error);
+    
+    error_control(error,res,req,true);
   }
 });
 
-router.patch('/updateUser', async (req, res, next) => {
-  try {
-    let token = req.headers.token;
-    let { userID, name, gender, birthdate, contactInfo, password } = req.body;
-    if (!userID) {
-      return res.status(400).json({ message: 'User ID is required.' });
-    }
-    verifyToken
-    // 构建动态更新的SQL语句
-    let updateFields = [];
-    let values = [];
-
-    if (name) {
-      updateFields.push("Name = ?");
-      values.push(name);
-    }
-    if (gender) {
-      updateFields.push("Gender = ?");
-      values.push(gender);
-    }
-    if (birthdate) {
-      updateFields.push("Birthdate = ?");
-      values.push(birthdate);
-    }
-    if (contactInfo) {
-      updateFields.push("ContactInfo = ?");
-      values.push(contactInfo);
-    }
-    if (password) {
-      updateFields.push("Password = ?");
-      values.push(password);
-    }
-
-    if (updateFields.length === 0) {
-      return res.status(400).json({ message: 'No fields to update.' });
-    }
-
-    values.push(userID);
-
-    const sql = `UPDATE Users SET ${updateFields.join(", ")} WHERE UserID = ?`;
-
-    await query({ sql, values });
-
-    return res.status(200).json({ message: 'User information updated successfully.' });
-
-  } catch (error) {
-    error_control(error);
-  }
-});
 
 router.post('/updateUser', async (req, res, next) => {
   try {
     let token = req.headers.token;
+    console.log(req.headers);
+    
     if (!token) {
       return res.status(401).json({ message: 'Token is required.' });
     }
@@ -132,7 +90,10 @@ router.post('/updateUser', async (req, res, next) => {
       return res.status(401).json({ message: 'Invalid or expired token.' });
     }
 
-    let { userID, name, gender, birthdate, contactInfo, password } = req.body;
+    let { userID, name, gender, birthdate, Phone, Email } = req.body;
+    var results = verifyToken(token);
+    // @ts-ignore
+    userID = results.UserID;
     if (!userID) {
       return res.status(400).json({ message: 'User ID is required.' });
     }
@@ -153,13 +114,13 @@ router.post('/updateUser', async (req, res, next) => {
       updateFields.push("Birthdate = ?");
       values.push(birthdate);
     }
-    if (contactInfo) {
-      updateFields.push("ContactInfo = ?");
-      values.push(contactInfo);
+    if (Phone) {
+      updateFields.push("Phone = ?");
+      values.push(Phone);
     }
-    if (password) {
-      updateFields.push("Password = ?");
-      values.push(password);
+    if (Email) {
+      updateFields.push("Email = ?");
+      values.push(Email);
     }
 
     if (updateFields.length === 0) {
@@ -175,7 +136,7 @@ router.post('/updateUser', async (req, res, next) => {
     return res.status(200).json({ message: 'User information updated successfully.' });
 
   } catch (error) {
-    error_control(error);
+    error_control(error,res,req);
   }
 });
 
@@ -190,7 +151,7 @@ router.post('/updatePassword', async (req, res) => {
         if (!decoded) {
             return res.status(401).json({ message: 'Invalid or expired token.' });
         }
-
+        let _get_uid=get_uid(token);
         let { newPassword } = req.body;
         if (!newPassword) {
             return res.status(400).json({ message: 'New password is required.' });
@@ -199,13 +160,12 @@ router.post('/updatePassword', async (req, res) => {
         await query({
             sql: `UPDATE Users SET Password = ? WHERE UserID = ?;`,
             // @ts-ignore
-            values: [newPassword, decoded.UserID],
+            values: [newPassword, _get_uid],
         });
-
         return res.status(200).json({ message: 'Password updated successfully.' });
 
     } catch (error) {
-        error_control(error);
+        error_control(error,res,req);
     }
 });
 
