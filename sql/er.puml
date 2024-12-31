@@ -66,4 +66,6 @@ Appointments }o--o{ Counselors : "takes"
 CounselingRecords }o--o{ Appointments : "records"
 CounselorLogins }o--o{ Counselors : "manages"
 PsychologicalRecords }o--o{ Users : "has"
+Users }o--o{ PsychologicalRecords : "owns"
+Counselors }o--o{ CounselingRecords : "performs"
 @enduml
