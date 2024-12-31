@@ -1,23 +1,17 @@
 <template>
   <el-row>
     <el-col :span="24">
-      <div class="login-dial">
-        <el-card class="login-page-container">
-          <el-text class="mx-1" size="large">Login</el-text>
+      <div class="login-dial shifted">
+        <el-card class="login-page-container"> 
+<h3>          <el-text class="mx-1" size="large">Login</el-text>
+</h3>
           <div class="form-group">
             <el-text class="mx-2" size="large">Username</el-text>
             <el-input type="text" id="username" v-model="username" placeholder="Enter your username" />
           </div>
-          <p>&nbsp;</p>
-          <p>&nbsp;</p>
           <div class="form-group">
             <el-text class="mx-2" size="large">Password</el-text>
             <el-input type="password" id="password" v-model="password" placeholder="Enter your password" />
-
-
-            <p>&nbsp;</p>
-            <p>&nbsp;</p>
-
             <div>
               <el-collapse v-model="activeNames" @change="handleChange">
                 <el-collapse-item title="Other">
@@ -184,14 +178,17 @@ onMounted(() => {
 }
 
 .login-dial {
-  margin: 10vh 0 0 0;
-  padding: 0;
-  width: 55vw;
-  /* 视口宽度的33% */
-  height: 65vh;
-  /* 视口高度的33% */
-}
+      width: 55vw;   /* 宽度占视口宽度的55% */
+      height: 65vh;  /* 高度占视口高度的65% */
+      position: relative; /* 使用相对定位以便可变换偏移 */
+      padding: 0;
+      margin: 0;
+      opacity: 0.8; /* 部分透明 */
+    }
 
+    .shifted {
+      transform: translate(20vw, 20vh); /* 偏移值可以根据需要调整 */
+    }
 
 el-input[type="text"],
 el-input[type="password"] {
