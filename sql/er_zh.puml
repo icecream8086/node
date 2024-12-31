@@ -1,0 +1,69 @@
+@startuml
+entity "预约" {
+  * 预约编号 : int
+  -- 
+  用户编号 : bigint
+  顾问编号 : int
+  预约日期 : datetime
+  预约时间 : datetime
+  预约状态 : varchar(20)
+}
+
+entity "用户" {
+  * 用户编号 : bigint
+  -- 
+  名字 : varchar(50)
+  性别 : varchar(10)
+  出生日期 : date
+  电话 : varchar(20)
+  密码 : varchar(32)
+  电子邮件 : varchar(100)
+}
+
+entity "顾问" {
+  * 顾问编号 : int
+  -- 
+  姓名 : varchar(50)
+  性别 : varchar(10)
+  出生日期 : date
+  联系信息 : varchar(100)
+  证书编号 : varchar(50)
+  专业领域 : varchar(100)
+  部门 : varchar(100)
+}
+
+entity "咨询记录" {
+  * 记录编号 : bigint
+  --
+  预约编号 : int
+  开始时间 : datetime
+  结束时间 : datetime
+  内容 : text
+  顾问反馈 : text
+}
+
+entity "顾问登录" {
+  * 登录编号 : bigint
+  --
+  顾问编号 : int
+  用户名 : varchar(50)
+  密码 : varchar(32)
+  最后登录时间 : datetime
+  是否管理员 : tinyint(1)
+}
+
+entity "心理记录" {
+  * 记录编号 : bigint
+  --
+  用户编号 : bigint
+  创建日期 : datetime
+  更新日期 : datetime
+  心理状态 : text
+}
+
+预约 }o--o{ 用户 : "属于"
+预约 }o--o{ 顾问 : "与"
+咨询记录 }o--o{ 预约 : "记录"
+顾问登录 }o--o{ 顾问 : "管理"
+心理记录 }o--o{ 用户 : "包含"
+@enduml
