@@ -1,27 +1,27 @@
 @startuml
 entity "预约" {
-  * 预约编号 : int
+  * 预约ID : int
   -- 
-  用户编号 : bigint
-  顾问编号 : int
+  用户ID : bigint
+  心理咨询师ID : int
   预约日期 : datetime
   预约时间 : datetime
   预约状态 : varchar(20)
 }
 
 entity "用户" {
-  * 用户编号 : bigint
+  * 用户ID : bigint
   -- 
-  名字 : varchar(50)
+  姓名 : varchar(50)
   性别 : varchar(10)
   出生日期 : date
-  电话 : varchar(20)
+  手机号 : varchar(20)
   密码 : varchar(32)
-  电子邮件 : varchar(100)
+  邮箱 : varchar(100)
 }
 
-entity "顾问" {
-  * 顾问编号 : int
+entity "心理咨询师" {
+  * 心理咨询师ID : int
   -- 
   姓名 : varchar(50)
   性别 : varchar(10)
@@ -33,37 +33,39 @@ entity "顾问" {
 }
 
 entity "咨询记录" {
-  * 记录编号 : bigint
+  * 记录ID : bigint
   --
-  预约编号 : int
+  预约ID : int
   开始时间 : datetime
   结束时间 : datetime
   内容 : text
-  顾问反馈 : text
+  心理咨询师反馈 : text
 }
 
-entity "顾问登录" {
-  * 登录编号 : bigint
+entity "心理咨询师登录" {
+  * 登录ID : bigint
   --
-  顾问编号 : int
+  心理咨询师ID : int
   用户名 : varchar(50)
   密码 : varchar(32)
   最后登录时间 : datetime
-  是否管理员 : tinyint(1)
+  是否是管理员 : tinyint(1)
 }
 
-entity "心理记录" {
-  * 记录编号 : bigint
+entity "心理健康记录" {
+  * 记录ID : bigint
   --
-  用户编号 : bigint
+  用户ID : bigint
   创建日期 : datetime
   更新日期 : datetime
   心理状态 : text
 }
 
 预约 }o--o{ 用户 : "属于"
-预约 }o--o{ 顾问 : "与"
+预约 }o--o{ 心理咨询师 : "参与"
 咨询记录 }o--o{ 预约 : "记录"
-顾问登录 }o--o{ 顾问 : "管理"
-心理记录 }o--o{ 用户 : "包含"
+心理咨询师登录 }o--o{ 心理咨询师 : "管理"
+心理健康记录 }o--o{ 用户 : "拥有"
+用户 }o--o{ 心理健康记录 : "拥有"
+心理咨询师 }o--o{ 咨询记录 : "进行"
 @enduml
