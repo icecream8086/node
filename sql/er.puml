@@ -1,0 +1,69 @@
+@startuml
+entity "Appointments" {
+  * AppointmentID : int
+  -- 
+  UserID : bigint
+  CounselorID : int
+  AppointmentDate : datetime
+  AppointmentTime : datetime
+  AppointmentStatus : varchar(20)
+}
+
+entity "Users" {
+  * UserID : bigint
+  -- 
+  Name : varchar(50)
+  Gender : varchar(10)
+  Birthdate : date
+  Phone : varchar(20)
+  Password : varchar(32)
+  Email : varchar(100)
+}
+
+entity "Counselors" {
+  * CounselorID : int
+  -- 
+  Name : varchar(50)
+  Gender : varchar(10)
+  Birthdate : date
+  ContactInfo : varchar(100)
+  CertificationNumber : varchar(50)
+  SpecialtyArea : varchar(100)
+  Department : varchar(100)
+}
+
+entity "CounselingRecords" {
+  * RecordID : bigint
+  --
+  AppointmentID : int
+  StartTime : datetime
+  EndTime : datetime
+  Content : text
+  CounselorFeedback : text
+}
+
+entity "CounselorLogins" {
+  * LoginID : bigint
+  --
+  CounselorID : int
+  Username : varchar(50)
+  Password : varchar(32)
+  LastLoginDateTime : datetime
+  IsAdmin : tinyint(1)
+}
+
+entity "PsychologicalRecords" {
+  * RecordID : bigint
+  --
+  UserID : bigint
+  CreateDate : datetime
+  UpdateDate : datetime
+  PsychologicalStatus : text
+}
+
+Appointments }o--o{ Users : "belongs to"
+Appointments }o--o{ Counselors : "takes"
+CounselingRecords }o--o{ Appointments : "records"
+CounselorLogins }o--o{ Counselors : "manages"
+PsychologicalRecords }o--o{ Users : "has"
+@enduml
