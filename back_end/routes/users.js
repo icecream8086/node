@@ -203,4 +203,43 @@ router.post('/getinfo', async (req, res) => {
   }
 });
 
+router.post('/getinfos', async (req, res) => {
+  try {
+    let token = req.headers.token;
+    if (!token) {
+      return res.status(401).json({ message: 'Token is required.' });
+    }
+    const decoded = verifyToken(token);
+    if (!decoded) {
+      return res.status(401).json({ message: 'Invalid or expired token.' });
+    }
+    
+    // Checking for UserID or CounselorID and calling respective function
+
+    // @ts-ignore
+    if (decoded.UserID) {
+      // @ts-ignore
+
+    var userID = decoded.UserID;
+     let user= await query({
+        sql: `SELECT UserID, Name, Gender, Birthdate, Phone, Email FROM Users WHERE UserID = ?`,
+        values: [userID],
+      });
+      return res.status(200).json({ message: 'User ID retrieved successfully.', user });
+    // @ts-ignore
+    } else if (decoded.CounselorID) {
+      // @ts-ignore
+      const counselorID =  decoded.CounselorID;
+      let counselor= await query({
+        sql: `SELECT CounselorID, Name, Gender, Birthdate, ContactInfo, CertificationNumber, SpecialtyArea, Department FROM Counselors WHERE CounselorID = ?`,
+        values: [counselorID],
+      });
+      return res.status(200).json({ message: 'Counselor ID retrieved successfully.', counselor });
+    } else {
+      return res.status(400).json({ message: 'UserID or CounselorID not found in token.' });
+    }
+  } catch (error) {
+    error_control(error, res, req);
+  }
+});
 module.exports = router;

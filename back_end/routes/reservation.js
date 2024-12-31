@@ -4,7 +4,7 @@ const query = require('../lib/datasource/mysql_connection_promise');  // Databas
 const { verifyToken, generateToken,get_uid } = require('../lib/encrypt/token');
 const {error_control}=require('../lib/life_cycle/error_control');
 
-router.post('/add_PsychologicalRecords', async (req, res, next) => {
+router.post('/add_Psychologicalreservation', async (req, res, next) => {
     try {
         let token = req.headers.token;
         let { CounselorID, AppointmentDate, AppointmentTime, AppointmentStatus = '否' } = req.body;
@@ -25,7 +25,7 @@ router.post('/add_PsychologicalRecords', async (req, res, next) => {
         }
 
         const result = await query({
-            sql: `INSERT INTO jinitaimei.Appointments (UserID, CounselorID, AppointmentDate, AppointmentTime, AppointmentStatus)
+            sql: `INSERT INTO Appointments (UserID, CounselorID, AppointmentDate, AppointmentTime, AppointmentStatus)
                   VALUES (?, ?, ?, ?, ?);`,
             values: [UserID, CounselorID, AppointmentDate, AppointmentTime, AppointmentStatus],
         });
@@ -35,7 +35,7 @@ router.post('/add_PsychologicalRecords', async (req, res, next) => {
         error_control(error, res, req, true);
     }
 });
-router.post('/update_PsychologicalRecords', async (req, res, next) => {
+router.post('/update_Psychologicalreservation', async (req, res, next) => {
     try {
         let token = req.headers.token;
         let { AppointmentID, AppointmentDate, AppointmentTime, AppointmentStatus } = req.body;
@@ -69,7 +69,7 @@ router.post('/update_PsychologicalRecords', async (req, res, next) => {
     }
 });
 
-router.post('/delete_PsychologicalRecords', async (req, res, next) => {
+router.post('/delete_Psychologicalreservation', async (req, res, next) => {
     try {
         let token = req.headers.token;
         let { AppointmentID } = req.body;
@@ -103,7 +103,7 @@ router.post('/delete_PsychologicalRecords', async (req, res, next) => {
     }
 });
 
-router.get('/get_PsychologicalRecords', async (req, res, next) => {
+router.get('/get_Psychologicalreservation', async (req, res, next) => {
     try {
         let token = req.headers.token;
 
@@ -133,34 +133,33 @@ router.get('/get_PsychologicalRecords', async (req, res, next) => {
     }
 });
 
-// router.get('/get_all_PsychologicalRecords', async (req, res, next) => {
-//     try {
-//         let token = req.headers.token;
+router.get('/get_CounselorID_Psychologicalreservation', async (req, res, next) => {
+    try {
+        let token = req.headers.token;
 
-//         if (!token) {
-//             return res.status(401).json({ message: 'Token is required.' });
-//         }
+        if (!token) {
+            return res.status(401).json({ message: 'Token is required.' });
+        }
 
-//         const decoded = verifyToken(token);
-//         if (!decoded) {
-//             return res.status(401).json({ message: 'Invalid or expired token.' });
-//         }
+        const decoded = verifyToken(token);
+        if (!decoded) {
+            return res.status(401).json({ message: 'Invalid or expired token.' });
+        }
         
-//         var UserID = get_uid(token);  
-//         const result = await query({
-//             sql: `SELECT * FROM Appointments ;`,
-//             values: [UserID],
-//         });
+        var UserID = get_uid(token);  
+        const result = await query({
+            sql: `SELECT * FROM Appointments WHERE CounselorID = ?`,
+            values: [UserID],
+        });
 
-//         if (result.length === 0) {
-//             return res.status(404).json({ message: 'Appointment not found.' });
-//         }
+        if (result.length === 0) {
+            return res.status(404).json({ message: 'Appointment not found.' });
+        }
 
-//         return res.status(200).json({ record: result});
-//     } catch (error) {
-//         console.error(error);
-//         error_control(error, res, req, true);
-//     }
-// });
-
+        return res.status(200).json({ record: result[0] });
+    } catch (error) {
+        console.error(error);
+        error_control(error, res, req, true);
+    }
+});
 module.exports = router;
