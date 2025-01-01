@@ -7,63 +7,41 @@
             <template #title>
               <el-icon>
                 <message />
-              </el-icon>Navigator One
+              </el-icon>预约管理
             </template>
             <el-menu-item-group>
-              <template #title>Group 1</template>
-              <el-menu-item index="1-1">Option 1</el-menu-item>
-              <el-menu-item index="1-2">Option 2</el-menu-item>
+              <el-menu-item index="1-1" @click="get_all_add_Psychologicalreservation()">立即预约</el-menu-item>
+              <el-menu-item index="1-2">预约纪录</el-menu-item>
+              <el-menu-item index="1-2">咨询纪录</el-menu-item>
             </el-menu-item-group>
-            <el-menu-item-group title="Group 2">
-              <el-menu-item index="1-3">Option 3</el-menu-item>
-            </el-menu-item-group>
-            <el-sub-menu index="1-4">
-              <template #title>Option 4</template>
-              <el-menu-item index="1-4-1">Option 4-1</el-menu-item>
-            </el-sub-menu>
           </el-sub-menu>
           <el-sub-menu index="2">
             <template #title>
-              <el-icon><icon-menu /></el-icon>Navigator Two
+              <el-icon><icon-menu /></el-icon>心理档案
             </template>
             <el-menu-item-group>
-              <template #title>Group 1</template>
-              <el-menu-item index="2-1">Option 1</el-menu-item>
-              <el-menu-item index="2-2">Option 2</el-menu-item>
+              <el-menu-item index="2-1" @click="get_all_add_PsychologicalRecords()">新建心理档案</el-menu-item>
+              <el-menu-item index="2-1" @click="get_all_PsychologicalRecords()">心理档案查看</el-menu-item>
+              <el-menu-item index="2-2">心理档案编辑</el-menu-item>
             </el-menu-item-group>
-            <el-menu-item-group title="Group 2">
-              <el-menu-item index="2-3">Option 3</el-menu-item>
-            </el-menu-item-group>
-            <el-sub-menu index="2-4">
-              <template #title>Option 4</template>
-              <el-menu-item index="2-4-1">Option 4-1</el-menu-item>
-            </el-sub-menu>
           </el-sub-menu>
           <el-sub-menu index="3">
             <template #title>
               <el-icon>
                 <setting />
-              </el-icon>Navigator Three
+              </el-icon>心理咨询老师
             </template>
             <el-menu-item-group>
-              <template #title>Group 1</template>
-              <el-menu-item index="3-1">Option 1</el-menu-item>
-              <el-menu-item index="3-2">Option 2</el-menu-item>
+              <el-menu-item index="3-1" @click="get_all_Counselors()">查看所有老师</el-menu-item>
+              <el-menu-item index="3-2">查看老师信息</el-menu-item>
             </el-menu-item-group>
-            <el-menu-item-group title="Group 2">
-              <el-menu-item index="3-3">Option 3</el-menu-item>
-            </el-menu-item-group>
-            <el-sub-menu index="3-4">
-              <template #title>Option 4</template>
-              <el-menu-item index="3-4-1">Option 4-1</el-menu-item>
-            </el-sub-menu>
           </el-sub-menu>
         </el-menu>
       </el-scrollbar>
     </el-aside>
 
     <el-container>
-      <el-header>
+      <el-header @click="click_clear_table()">
         <el-row>
           <el-col :span="10"></el-col>
           <el-col :span="2">
@@ -79,9 +57,9 @@
                   </el-icon>
                   <template #dropdown>
                     <el-dropdown-menu>
-                      <el-dropdown-item>个人信息</el-dropdown-item>
-                      <el-dropdown-item>修改密码</el-dropdown-item>
-                      <el-dropdown-item>退出登录</el-dropdown-item>
+                      <el-dropdown-item @click="navigate_to_personal_info()">个人信息</el-dropdown-item>
+                      <el-dropdown-item @click="navigate_to_update_password()">修改密码</el-dropdown-item>
+                      <el-dropdown-item @click="exit_login()">退出登录</el-dropdown-item>
                     </el-dropdown-menu>
                   </template>
                 </el-dropdown>
@@ -96,8 +74,12 @@
       </el-header>
 
       <el-main>
-        <el-scrollbar>
-          <p>template</p>
+        <el-scrollbar >
+          <welcome v-if="watch_able[0]"></welcome>
+          <add_Psychologicalreservation v-if="watch_able[1]"></add_Psychologicalreservation>
+          <add_PsychologicalRecords v-if="watch_able[4]"></add_PsychologicalRecords>
+          <table_get_PsychologicalRecord v-if="watch_able[5]" :record="records"> </table_get_PsychologicalRecord>
+          <table_get_Counselor :counselor="records" v-if="watch_able[6]"> </table_get_Counselor>
         </el-scrollbar>
       </el-main>
     </el-container>
@@ -105,9 +87,32 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { Menu as IconMenu, Message, Setting } from '@element-plus/icons-vue'
 import SegClock from '@/components/seg_clock.vue'
+import table_get_PsychologicalRecord from '@/components/table_get_PsychologicalRecord.vue'
+import table_get_Counselor from '@/components/table_get_Counselor.vue'
+import welcome from '@/components/welcome.vue'
+import add_PsychologicalRecords from '@/components/add_PsychologicalRecords.vue'
+import add_Psychologicalreservation from '@/components/reservation/add_Psychologicalreservation.vue'
+
+const username = ref("");
+import { useRouter } from 'vue-router'
+const router = useRouter(); // 获取路由实例
+import { ElNotification, ElMessage } from 'element-plus'
+import axios from 'axios'
+const watch_able = ref([1, 0, 0, 0, 0, 0, 0, 0]);
+const records = ref([]);
+const add_element = () => {
+  watch_able.value.push(watch_able.value.length);
+}
+
+const setElementAtPosition = (position) => {
+  if (position < watch_able.value.length && position >= 0) {
+    watch_able.value = watch_able.value.map((_, index) => index === position ? 1 : 0);
+  }
+}
+
 
 const item = {
   date: '2016-05-02',
@@ -116,7 +121,115 @@ const item = {
 }
 const tableData = ref(Array.from({ length: 20 }).fill(item))
 
+const navigate_to_personal_info = () => {
+  ElNotification({
+    title: 'Success',
+    message: 'Redirecting to personal info page',
+    type: 'success',
+  })
+  setTimeout(() => {
+    router.push('/personal_info');
+  }, 1000);
+}
 
+const navigate_to_update_password = () => {
+  ElNotification({
+    title: 'Success',
+    message: 'navigating to update password page',
+    type: 'success',
+  })
+  setTimeout(() => {
+    router.push('/update_password');
+  }, 2000);
+}
+
+const click_clear_table = () => {
+  setElementAtPosition(0);
+
+}
+const exit_login = () => {
+  localStorage.clear();
+  ElNotification({
+    title: 'Success',
+    message: 'Exiting...',
+    type: 'success',
+  })
+  ElMessage({
+    message: 'bye .',
+    type: 'success',
+  })
+  setTimeout(() => {
+    router.push('/login');
+  }, 2000);
+
+}
+
+const get_all_add_PsychologicalRecords = () => {
+  ElNotification({
+    title: 'Success',
+    message: 'Adding Psychological Records',
+    type: 'success',
+  })
+  setElementAtPosition(4);
+}
+
+const get_all_PsychologicalRecords = () => {
+  ElNotification({
+    title: 'Success',
+    message: 'Getting all Psychological Records',
+    type: 'success',
+  })
+  let record = [];
+  axios.post('/api/PsychologicalRecords/get_all_PsychologicalRecords', {}, {
+    headers: {
+      'token': localStorage.getItem('token'),
+    },
+  }).then((response) => {
+    record = response.data.record;
+    records.value = record;
+    setElementAtPosition(5);
+  }).catch((err) => {
+    console.log(err);
+  });
+}
+const get_all_Counselors = () => {
+  ElNotification({
+    title: 'Success',
+    message: 'Getting all Counselors',
+    type: 'success',
+  })
+  let record = [];
+  axios.post('/api/Counselor/get_all', {}, {
+    headers: {
+      'token': localStorage.getItem('token'),
+    },
+  }).then((response) => {
+    console.log(response.data);
+
+    record = response.data.counselor;
+    records.value = record;
+    setElementAtPosition(6);
+  }).catch((err) => {
+    console.log(err);
+  });
+}
+
+const get_all_add_Psychologicalreservation = () => {
+  ElNotification({
+    title: 'Success',
+    message: 'Adding Psychological reservation',
+    type: 'success',
+  })
+  setElementAtPosition(1);
+}
+onMounted(() => {
+  ElNotification({
+    title: 'Welcome',
+    message: 'Welcome to the dashboard',
+    type: 'success',
+  });
+
+})
 </script>
 
 <style scoped>

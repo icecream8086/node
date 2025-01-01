@@ -4,7 +4,7 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      path: '/login',
+      path: '/',
       name: 'login',
       component:  () => import('../views/login.vue'),
     },
@@ -24,12 +24,6 @@ const router = createRouter({
       // which is lazy-loaded when the route is visited.
       component: () => import('../views/Personal_info.vue'),
     },
-    {
-      path: '/update_password',
-      name: 'update_password',
-      component: () => import('../views/update_password.vue'),
-    },
-    
   ],
 })
 
