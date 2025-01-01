@@ -2,7 +2,7 @@
 var express = require('express');
 var router = express.Router();
 const query = require('../lib/datasource/mysql_connection_promise');  // Database connection
-const { verifyToken, generateToken, get_counselorID,get_uid } = require('../lib/encrypt/token');
+const { verifyToken, generateToken, get_counselorID, get_uid } = require('../lib/encrypt/token');
 const { error_control } = require('../lib/life_cycle/error_control');
 const { checkAdminPermission } = require('../lib/encrypt/permission');
 
@@ -99,7 +99,7 @@ router.post('/updateCounselorInfo', async (req, res) => {
             return res.status(401).json({ message: 'Invalid or expired token.' });
         }
 
-        let {  name, gender, birthdate, contactInfo, certificationNumber, specialtyArea, department } = req.body;
+        let { name, gender, birthdate, contactInfo, certificationNumber, specialtyArea, department } = req.body;
         const results = verifyToken(token);
         counselorID = get_counselorID(token);
         // 构建动态更新的SQL语句
@@ -204,7 +204,7 @@ router.post('/updatePassword', async (req, res) => {
     }
 });
 
-router.post('/updateCounselorInfo_admin',checkAdminPermission, async (req, res) => {
+router.post('/updateCounselorInfo_admin', checkAdminPermission, async (req, res) => {
     try {
         let token = req.headers.token;
         if (!token) {
@@ -267,6 +267,22 @@ router.post('/updateCounselorInfo_admin',checkAdminPermission, async (req, res) 
         await query({ sql, values });
 
         return res.status(200).json({ message: 'Counselor information updated successfully.' });
+
+    } catch (error) {
+        error_control(error, res, req);
+    }
+});
+
+router.post('/get_all', async (req, res) => {
+    try {
+
+
+        const getUserInfoQuery = await query({
+            sql: `SELECT * FROM Counselors;`,
+        });
+
+        let userInfo = JSON.parse(JSON.stringify(getUserInfoQuery));
+        res.status(200).json({ counselor: userInfo });
 
     } catch (error) {
         error_control(error, res, req);
