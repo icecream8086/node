@@ -20,7 +20,11 @@ router.post('/add_PsychologicalRecords', async (req, res, next) => {
         let _get_uid=get_uid(token);        
 
         // 当前时间作为 CreateDate
-        const CreateDate = new Date();
+        const CreateDate = new Date(); // 创建一个新的日期对象
+        const mysqlFormat = CreateDate.toISOString().slice(0, 19).replace('T', ' '); // 转换为MySQL格式
+        console.log(mysqlFormat); // 输出结果
+        
+        
         UpdateDate = UpdateDate ? new Date(UpdateDate).toISOString().slice(0, 19).replace('T', ' ') : null;
         
         const result = await query({
@@ -141,5 +145,35 @@ router.get('/get_all_PsychologicalRecords', async (req, res, next) => {
     }
 });
 
-  
+
+router.post('/get_all_PsychologicalRecords', async (req, res, next) => {
+    try {
+        let token = req.headers.token;
+
+        if (!token) {
+            return res.status(401).json({ message: 'Token is required.' });
+        }
+
+        const decoded = verifyToken(token);
+        if (!decoded) {
+            return res.status(401).json({ message: 'Invalid or expired token.' });
+        }
+        
+        var UserID = get_uid(token);  
+        const result = await query({
+            sql: `SELECT * FROM PsychologicalRecords where UserID=?;`,
+            values: [UserID],
+        });
+
+        if (result.length === 0) {
+            return res.status(404).json({ message: 'Appointment not found.' });
+        }
+
+        return res.status(200).json({ record: result});
+    } catch (error) {
+        console.error(error);
+        error_control(error, res, req, true);
+    }
+});
+
 module.exports = router;
