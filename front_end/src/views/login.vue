@@ -2,9 +2,9 @@
   <el-row>
     <el-col :span="24">
       <div class="login-dial shifted">
-        <el-card class="login-page-container"> 
-<h3>          <el-text class="mx-1" size="large">Login</el-text>
-</h3>
+        <el-card class="login-page-container">
+          <h3> <el-text class="mx-1" size="large">Login</el-text>
+          </h3>
           <div class="form-group">
             <el-text class="mx-2" size="large">Username</el-text>
             <el-input type="text" id="username" v-model="username" placeholder="Enter your username" />
@@ -48,6 +48,7 @@ import md5 from 'js-md5';
 import { useAuthStore } from '../stores/user';
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+
 const router = useRouter(); // 获取路由实例
 
 const authStore = useAuthStore();
@@ -57,13 +58,17 @@ const password = ref("");
 const User_Type = ref("");
 const radio1 = ref("1");
 
+
+authStore.token = localStorage.getItem('token') || '';
+authStore.type = localStorage.getItem('type') || '';
+authStore.name = localStorage.getItem('name') || '';
+
 const hashPasswordUsingMD5 = (password) => {
   const hash = md5(password);
   return hash.toUpperCase(); // 转换为大写32位MD5
 };
 
 const login = async () => {
-  console.log(radio1.value);
   if (radio1.value === "1") {
     await user_login();
   } else if (radio1.value === "2") {
@@ -88,9 +93,13 @@ const user_login = async () => {
       password: password.value,
     });
 
-    const { token, type } = response.data;
+    const  token  = response.data.token;
+    const  type  = radio1.value;
+    localStorage.setItem('token',token);
+    localStorage.setItem('have_token',true);
 
     authStore.setToken(token);
+    console.log(localStorage.getItem('token'));
 
     if (type === "UserID") {
       authStore.setType("UserID");
@@ -123,10 +132,13 @@ const counselor_login = async () => {
       password: password.value,
     });
 
-    const { token, type } = response.data;
-
+    const  token  = response.data.token;
+    const  type  = radio1.value;
     authStore.setToken(token);
+    localStorage.setItem('token',token);
+    localStorage.setItem('have_token',true);
 
+    console.log(localStorage.getItem('token'));
     if (type === "UserID") {
       authStore.setType("UserID");
     } else {
@@ -143,8 +155,41 @@ const counselor_login = async () => {
   }
 };
 
+const get_info = async () => {
+  try {
+    const response = await axios.post('/api/users/getinfo', {}, {
+      headers: {
+        'token': localStorage.getItem('token'),
+      },
+    });
+    useAuthStore().setName(response.data.decoded.Name);
+  } catch (err) {
+    console.log(err);
+    if (err.response.status === 401) {
+      localStorage.removeItem('token');
+    }
+  }
+};
+
+const checkToken = async () => {
+  try {
+      let x=localStorage.getItem('have_token');
+      if(x){
+        router.push("/dashboard");
+      }else if(!x){
+        router.push("/login");
+      }
+  } catch (err) {
+    console.log(err);
+    return false;
+  }
+};
 onMounted(() => {
   document.body.className = "login-page";
+  checkToken();
+  get_info();
+  console.log(authStore.token);
+  
 });
 </script>
 
@@ -178,17 +223,22 @@ onMounted(() => {
 }
 
 .login-dial {
-      width: 55vw;   /* 宽度占视口宽度的55% */
-      height: 65vh;  /* 高度占视口高度的65% */
-      position: relative; /* 使用相对定位以便可变换偏移 */
-      padding: 0;
-      margin: 0;
-      opacity: 0.8; /* 部分透明 */
-    }
+  width: 55vw;
+  /* 宽度占视口宽度的55% */
+  height: 65vh;
+  /* 高度占视口高度的65% */
+  position: relative;
+  /* 使用相对定位以便可变换偏移 */
+  padding: 0;
+  margin: 0;
+  opacity: 0.8;
+  /* 部分透明 */
+}
 
-    .shifted {
-      transform: translate(20vw, 20vh); /* 偏移值可以根据需要调整 */
-    }
+.shifted {
+  transform: translate(20vw, 20vh);
+  /* 偏移值可以根据需要调整 */
+}
 
 el-input[type="text"],
 el-input[type="password"] {
