@@ -68,7 +68,7 @@
       <el-descriptions class="margin-top" title="更新表单" :column="3" size="large" border>
         <template #extra>
           <el-progress :percentage="100" :indeterminate="true" />
-          <el-button type="primary">提交表单</el-button>
+          <el-button type="primary" @click="updateUser()">提交表单</el-button>
         </template>
         <el-descriptions-item>
           <template #label>
@@ -131,7 +131,7 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import {
   Iphone,
   Location,
@@ -141,16 +141,17 @@ import {
 } from '@element-plus/icons-vue'
 import { useRouter } from 'vue-router'
 const router = useRouter(); // 获取路由实例
-
+import { ElNotification, ElMessage } from 'element-plus'
+import axios from 'axios';
 const size = ref('large')
 
 const user = ref({
-  UserID: 1,
-  Name: 'qwerty',
+  UserID: 0,
+  Name: '',
   Gender: '1',
   Birthdate: null,
   Phone: null,
-  Email: 'adcc@mail.com',
+  Email: '',
 })
 
 
@@ -174,11 +175,64 @@ const blockMargin = computed(() => {
     marginTop: marginMap[size.value] || marginMap.default,
   }
 })
+const updateUser = async () => {
+  try {
+    // let { name, gender, birthdate, Phone, Email } = req.body;
+    const response = await axios.post('/api/users/updateUser', {
+      name: user.value.Name || '',
+      gender: user.value.Gender || '',
+      birthdate: user.value.Birthdate || '',
+      Phone: user.value.Phone || '',
+      Email: user.value.Email || ''
+    }, {
+      headers: {
+        'token': localStorage.getItem('token') || '',
+      }
+    });
+    console.log('User updated successfully:', response.data);
+    ElMessage.success('User updated successfully');
+  } catch (error) {
+    console.error('Error updating user:', error);
+    ElMessage.error('Error updating user');
+  }
+};
+
+const getUserInfo = () => {
+  return axios.post('/api' + '/users/getinfos', {}, {
+    headers: {
+      'token': localStorage.getItem('token'),
+    }
+  })
+    .then(response => {
+      const fetchedUser = response.data.user[0];
+
+      user.value.UserID = fetchedUser.UserID;
+      user.value.Name = fetchedUser.Name;
+      user.value.Gender = fetchedUser.Gender;
+      user.value.Birthdate = fetchedUser.Birthdate;
+      user.value.Phone = fetchedUser.Phone;
+      user.value.Email = fetchedUser.Email;
+
+      console.log('User info retrieved successfully:', user.value.Name);
+    })
+    .catch(error => {
+      console.error('Error fetching user info:', error);
+    });
+};
+
 
 const goBack = () => {
   router.back()
 }
 
+onMounted(() => {
+  ElNotification({
+    title: 'Welcome',
+    message: 'Welcome to Personal info',
+    type: 'success',
+  });
+  getUserInfo();
+})
 </script>
 
 

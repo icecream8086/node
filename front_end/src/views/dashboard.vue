@@ -11,8 +11,8 @@
             </template>
             <el-menu-item-group>
               <el-menu-item index="1-1" @click="get_all_add_Psychologicalreservation()">立即预约</el-menu-item>
-              <el-menu-item index="1-2">预约纪录</el-menu-item>
-              <el-menu-item index="1-2">咨询纪录</el-menu-item>
+              <el-menu-item index="1-2" @click="get_all_watch_Psychologicalreservation()">预约纪录</el-menu-item>
+              <el-menu-item index="1-2" @click="get_all_update_Psychologicalreservation()">更新预约</el-menu-item>
             </el-menu-item-group>
           </el-sub-menu>
           <el-sub-menu index="2">
@@ -22,7 +22,7 @@
             <el-menu-item-group>
               <el-menu-item index="2-1" @click="get_all_add_PsychologicalRecords()">新建心理档案</el-menu-item>
               <el-menu-item index="2-1" @click="get_all_PsychologicalRecords()">心理档案查看</el-menu-item>
-              <el-menu-item index="2-2">心理档案编辑</el-menu-item>
+              <el-menu-item index="2-2" @click="get_all_update_update_note()">心理档案编辑</el-menu-item>
             </el-menu-item-group>
           </el-sub-menu>
           <el-sub-menu index="3">
@@ -77,9 +77,13 @@
         <el-scrollbar >
           <welcome v-if="watch_able[0]"></welcome>
           <add_Psychologicalreservation v-if="watch_able[1]"></add_Psychologicalreservation>
+          <watch_Psychologicalreservation v-if="watch_able[2]"></watch_Psychologicalreservation>
+          <update_Psychologicalreservation v-if="watch_able[3]"></update_Psychologicalreservation>
           <add_PsychologicalRecords v-if="watch_able[4]"></add_PsychologicalRecords>
           <table_get_PsychologicalRecord v-if="watch_able[5]" :record="records"> </table_get_PsychologicalRecord>
-          <table_get_Counselor :counselor="records" v-if="watch_able[6]"> </table_get_Counselor>
+          <update_note v-if="watch_able[6]"></update_note>
+
+          <table_get_Counselor :counselor="records" v-if="watch_able[7]"> </table_get_Counselor>
         </el-scrollbar>
       </el-main>
     </el-container>
@@ -95,13 +99,16 @@ import table_get_Counselor from '@/components/table_get_Counselor.vue'
 import welcome from '@/components/welcome.vue'
 import add_PsychologicalRecords from '@/components/add_PsychologicalRecords.vue'
 import add_Psychologicalreservation from '@/components/reservation/add_Psychologicalreservation.vue'
+import watch_Psychologicalreservation from '@/components/reservation/watch_Psychologicalreservation.vue'
+import update_Psychologicalreservation from '@/components/reservation/update_Psychologicalreservation.vue'
+import update_note from '@/components/reservation/update_note.vue'
 
 const username = ref("");
 import { useRouter } from 'vue-router'
 const router = useRouter(); // 获取路由实例
 import { ElNotification, ElMessage } from 'element-plus'
 import axios from 'axios'
-const watch_able = ref([1, 0, 0, 0, 0, 0, 0, 0]);
+const watch_able = ref([1, 0, 0, 0, 0, 0, 0, 0,0,0]);
 const records = ref([]);
 const add_element = () => {
   watch_able.value.push(watch_able.value.length);
@@ -208,7 +215,7 @@ const get_all_Counselors = () => {
 
     record = response.data.counselor;
     records.value = record;
-    setElementAtPosition(6);
+    setElementAtPosition(7);
   }).catch((err) => {
     console.log(err);
   });
@@ -221,6 +228,32 @@ const get_all_add_Psychologicalreservation = () => {
     type: 'success',
   })
   setElementAtPosition(1);
+}
+const get_all_watch_Psychologicalreservation = () => {
+  ElNotification({
+    title: 'Success',
+    message: 'Getting all Psychological reservation',
+    type: 'success',
+  })
+  setElementAtPosition(2);
+}
+const get_all_update_Psychologicalreservation = () => {
+  ElNotification({
+    title: 'Success',
+    message: 'Updating Psychological reservation',
+    type: 'success',
+  })
+  setElementAtPosition(3);
+}
+
+
+const get_all_update_update_note = () =>{
+  ElNotification({
+    title: 'Success',
+    message: 'Updating Psychological reservation',
+    type: 'success',
+  })
+  setElementAtPosition(6);
 }
 onMounted(() => {
   ElNotification({
