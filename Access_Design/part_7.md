@@ -224,7 +224,6 @@ router.post('/update_Psychologicalreservation', async (req, res, next) => {
 4. 检查返回的HTTP状态码和响应内容，确保与预期输出匹配。
 5. 记录测试结果。
 
-
 ## 心理档案更新接口测试文档
 
 ### 接口名称
@@ -233,7 +232,7 @@ router.post('/update_Psychologicalreservation', async (req, res, next) => {
 
 ### 接口源码
 
-```javascript 
+```javascript
 router.post('/update_PsychologicalRecords', async (req, res, next) => {
     try {
         let token = req.headers.token;
@@ -338,3 +337,12 @@ router.post('/update_PsychologicalRecords', async (req, res, next) => {
 3. 发送不同的测试输入数据。
 4. 检查返回的HTTP状态码和响应内容，确保与预期输出匹配。
 5. 记录测试结果。
+
+## cve漏洞报告
+
+```text
+得益于nodeJS的强大生态系统，我们的系统在开发过程中使用了大量的第三方模块，这些模块为我们提供了丰富的功能和便捷的开发体验。然而，第三方模块的使用也带来了一定的安全风险，但是只需要依赖自动化工具针对 package.json 进行分析即可。我们使用了 npm audit 来检查项目中的依赖项是否存在已知的漏洞，以及如何解决这些漏洞。通过定期运行 npm audit，我们可以及时发现并解决潜在的安全问题，确保系统的安全性。
+一般情况下，使用Redhat Dependabot等工具可以自动检测项目中的依赖项是否存在已知的漏洞，以及如何解决这些漏洞。通过定期运行这些工具，我们可以及时发现并解决潜在的安全问题，确保系统的安全性。
+```
+
+[注:图片的b开头后缀代表后端,f代表前端,这句话删掉]
