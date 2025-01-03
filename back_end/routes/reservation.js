@@ -9,6 +9,7 @@ router.post('/add_Psychologicalreservation', async (req, res, next) => {
         let token = req.headers.token;
         let { CounselorID, AppointmentDate, AppointmentTime, AppointmentStatus = '否' } = req.body;
 
+        
         if (!token) {
             return res.status(401).json({ message: 'Token is required.' });
         }
@@ -29,7 +30,7 @@ router.post('/add_Psychologicalreservation', async (req, res, next) => {
                   VALUES (?, ?, ?, ?, ?);`,
             values: [UserID, CounselorID, AppointmentDate, AppointmentTime, AppointmentStatus],
         });
-        return res.status(200).json({ message: 'Appointment added successfully.' });
+        return res.status(200).json({ message: 'Appointment added successfully.',result:result });
     } catch (error) {
         console.error(error);
         error_control(error, res, req, true);
@@ -162,4 +163,35 @@ router.get('/get_CounselorID_Psychologicalreservation', async (req, res, next) =
         error_control(error, res, req, true);
     }
 });
+
+router.get('/get_latest_Psychologicalreservation', async (req, res, next) => {
+    try {
+        let token = req.headers.token;
+
+        if (!token) {
+            return res.status(401).json({ message: 'Token is required.' });
+        }
+
+        const decoded = verifyToken(token);
+        if (!decoded) {
+            return res.status(401).json({ message: 'Invalid or expired token.' });
+        }
+        
+        var UserID = get_uid(token);  
+        const result = await query({
+            sql: `SELECT * FROM Appointments WHERE UserID = ? ORDER BY AppointmentID DESC LIMIT 1`,
+            values: [UserID],
+        });
+
+        if (result.length === 0) {
+            return res.status(404).json({ message: 'Appointment not found.' });
+        }
+
+        return res.status(200).json({ record: result[0] });
+    } catch (error) {
+        console.error(error);
+        error_control(error, res, req, true);
+    }
+}
+);
 module.exports = router;
