@@ -87,18 +87,21 @@ router.post('/updateUser', async (req, res, next) => {
       return res.status(401).json({ message: 'Token is required.' });
     }
 
+
     const decoded = verifyToken(token);
+
     if (!decoded) {
       return res.status(401).json({ message: 'Invalid or expired token.' });
     }
 
-    let { userID, name, gender, birthdate, Phone, Email } = req.body;
-    var results = verifyToken(token);
+
+    let { name, gender, birthdate, Phone, Email } = req.body;
+
+
     // @ts-ignore
-    userID = results.UserID;
-    if (!userID) {
-      return res.status(400).json({ message: 'User ID is required.' });
-    }
+    let userID = get_uid(token);
+
+
 
     // 构建动态更新的SQL语句
     let updateFields = [];
@@ -182,7 +185,7 @@ router.post('/getinfo', async (req, res) => {
     if (!decoded) {
       return res.status(401).json({ message: 'Invalid or expired token.' });
     }
-    
+
     // Checking for UserID or CounselorID and calling respective function
 
     // @ts-ignore
@@ -190,10 +193,10 @@ router.post('/getinfo', async (req, res) => {
       // @ts-ignore
       const userID = get_uid(decoded.UserID);
       return res.status(200).json({ message: 'User ID retrieved successfully.', decoded });
-    // @ts-ignore
+      // @ts-ignore
     } else if (decoded.CounselorID) {
       // @ts-ignore
-      const counselorID =  get_counselorID(decoded.CounselorID);
+      const counselorID = get_counselorID(decoded.CounselorID);
       return res.status(200).json({ message: 'Counselor ID retrieved successfully.', decoded });
     } else {
       return res.status(400).json({ message: 'UserID or CounselorID not found in token.' });
@@ -213,24 +216,24 @@ router.post('/getinfos', async (req, res) => {
     if (!decoded) {
       return res.status(401).json({ message: 'Invalid or expired token.' });
     }
-    
+
     // Checking for UserID or CounselorID and calling respective function
 
     // @ts-ignore
     if (decoded.UserID) {
       // @ts-ignore
 
-    var userID = decoded.UserID;
-     let user= await query({
+      var userID = decoded.UserID;
+      let user = await query({
         sql: `SELECT UserID, Name, Gender, Birthdate, Phone, Email FROM Users WHERE UserID = ?`,
         values: [userID],
       });
       return res.status(200).json({ message: 'User ID retrieved successfully.', user });
-    // @ts-ignore
+      // @ts-ignore
     } else if (decoded.CounselorID) {
       // @ts-ignore
-      const counselorID =  decoded.CounselorID;
-      let counselor= await query({
+      const counselorID = decoded.CounselorID;
+      let counselor = await query({
         sql: `SELECT CounselorID, Name, Gender, Birthdate, ContactInfo, CertificationNumber, SpecialtyArea, Department FROM Counselors WHERE CounselorID = ?`,
         values: [counselorID],
       });
